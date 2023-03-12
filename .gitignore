@@ -1,0 +1,33 @@
+# Compiled Python files
+*.pyc
+
+# Virtual environment
+venv/
+
+# Development settings
+*.env
+
+# SQLite database file
+db.sqlite3
+
+# Static files
+staticfiles/
+
+# Media files
+media/
+
+# Log files
+logs/
+
+# Backup files
+*.bak
+
+# IDE files
+.vscode/
+.idea/
+*.pydevproject
+
+# Ignore migration files if not required
+# **/migrations/*.py
+# **/migrations/*.bak
+# **/migrations/*.sqlite3
