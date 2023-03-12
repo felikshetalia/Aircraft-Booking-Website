@@ -22,8 +22,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Lint code
-        run: black --check .
+      - name: Install Python linters dependencies
+        run: pip install black flake8
+
+      - name: Run linters
+        uses: wearerequired/lint-action@v2
+        with:
+          auto_fix: true
+          black: true
+          black_auto_fix: true
+          flake8: true
+          flake8_auto_fix: false
 
       - name: Test code
         run: python manage.py test
