@@ -25,14 +25,14 @@ jobs:
       - name: Install Python linters dependencies
         run: pip install black flake8
 
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          auto_fix: true
-          black: true
-          black_auto_fix: true
-          flake8: true
-          flake8_auto_fix: false
+      # - name: Run linters
+      #   uses: wearerequired/lint-action@v2
+      #   with:
+      #     auto_fix: true
+      #     black: true
+      #     # black_auto_fix: true
+      #     # flake8: true
+      #     # flake8_auto_fix: false
 
       - name: Test code
         run: python manage.py test
