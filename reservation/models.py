@@ -1,5 +1,5 @@
 from django.db import models
-from reservation.models import User
+#from accounts.models import User
 
 # Create your models here.
 class Aircraft(models.Model):
@@ -12,4 +12,4 @@ class Aircraft(models.Model):
     image = models.ImageField(upload_to='aircrafts/', blank=True, null=True)
     availability = models.BooleanField()
 
-    users = models.ForeignKey(User)
+    #users = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
