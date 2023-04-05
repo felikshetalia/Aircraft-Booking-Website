@@ -9,9 +9,6 @@
     <style>
     </style>
 </head>
-{% if message %}
-        <p>{{ message }}</p>
-    {% endif %}
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -20,6 +17,9 @@
                     <h2 class="text-center mb-4">Welcome to Airplane booking</h2>
                     <small>To access your account's settings, start by entering your username and password
                         below.</small>
+                    {% if form.errors %}
+                       <p style="color: red">Username doesn't exist or password is not correct</p>
+                   {% endif %}
                     <div class="form-group">
                         <label for="username">Username</label>
                         {{ form.username }}
