@@ -127,3 +127,4 @@ LOGIN_REDIRECT_URL = 'my_view'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+# AUTH_USER_MODEL = 'accounts.User'
