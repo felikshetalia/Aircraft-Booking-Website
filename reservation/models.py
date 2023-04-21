@@ -1,4 +1,6 @@
 from django.db import models
+
+from accounts.models import User
 #from accounts.models import User
 
 # Create your models here.
@@ -13,3 +15,14 @@ class Aircraft(models.Model):
     availability = models.BooleanField()
 
     #users = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
+class Booking(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Confirmed', 'Confirmed'),
+        ('Cancelled', 'Cancelled'),
+    ]
+    aircraft = models.ForeignKey(Aircraft, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')

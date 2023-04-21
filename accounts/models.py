@@ -11,7 +11,8 @@ class User(models.Model):
     passwd = models.CharField(max_length=30)
 
     class Meta:
-        abstract = True
+        # abstract = True
+        pass
 
     def __str__(self):
         return self.name + self.surname
