@@ -7,15 +7,8 @@ venv/
 # Development settings
 *.env
 
-# SQLite database file
-db.sqlite3
-
 # Static files
 staticfiles/
-
-# Media files
-media/
-
 # Log files
 logs/
 
