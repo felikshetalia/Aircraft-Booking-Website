@@ -1,0 +1,50 @@
+<!-- home.html -->
+{% extends 'base.html' %}
+{% block page_title %}
+    Aircraft Reservation Home
+{% endblock %}
+{% block content %}
+    {% load static %}
+<head>
+    <title>Aircraft Reservation Home</title>
+     <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+    <style>
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form method="GET" action="#">
+            <input type="text" name="q" placeholder="Search aircraft" value="{{ request.GET.q }}">
+            <select name="type">
+                <option value="">All Types</option>
+                <option value="Boeing">Boeing</option>
+                <option value="Airbus">Airbus</option>
+                <option value="Embraer">Embraer</option>
+            </select>
+            <select name="origin">
+                <option value="">All Origins</option>
+                <option value="United States">United States</option>
+                <option value="France">France</option>
+                <option value="Brazil">Brazil</option>
+            </select>
+            <input type="submit" value="Search">
+        </form>
+        <div class="row">
+            {% for aircraft in aircrafts %}
+                <div class="card">
+                   <img src="{{ aircraft.image }}" alt="{{ aircraft.xwmmodel }}">
+                    <div class="card-body">
+                      <h3 class="card-title">{{ aircraft.model }}</h3>
+                      <p class="card-text"><strong>Fuel Capacity: </strong>{{ aircraft.fuelCapacity }}</p>
+                      <p class="card-text"><strong>Current Speed: </strong>{{ aircraft.currentSpeed }}</p>
+                      <p class="card-text"><strong>Availability: </strong>{{ aircraft.availability }}</p>
+                        <p class="card-text"><strong>Description: </strong>{{ aircraft.description }}</p>
+                       <a href="#" class="btn">Booking</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+{% endblock %}
