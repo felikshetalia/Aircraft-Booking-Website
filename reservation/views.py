@@ -10,6 +10,8 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
+from django.conf import settings
+
 
 
 
@@ -18,8 +20,11 @@ class PlanesView(generic.CreateView):
     success_url = reverse_lazy('planes')
     template_name = 'planes/planeslist.html'
 
+
 def my_view(request):
-    return HttpResponse("<html><body><h1>Hello, world!</h1></body></html>")
+    aircrafts = Aircraft.objects.all()
+    context = {'aircrafts': aircrafts}
+    return render(request, 'home.html', context)
 
 
 
@@ -85,3 +90,10 @@ def book_aircraft_api(request):
     aircraft_id = request.POST.get('aircraftId')
     start_time_str = request.POST.get('bookingStartDateTime')
 
+
+def about(request):
+    return render(request, 'About.html', {'title': 'About'})
+
+
+def contact(request):
+    return render(request, 'Contact.html', {'title': 'contact'})
