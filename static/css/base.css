@@ -1,0 +1,33 @@
+/* Custom CSS for base.html */
+
+.navbar {
+    margin-bottom: 30px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 28px;
+}
+
+.nav-item {
+    margin-right: 20px;
+}
+
+.nav-link {
+    font-size: 20px;
+}
+
+.nav-item.active .nav-link {
+    font-weight: bold;
+}
+
+@media (max-width: 767px) {
+    .navbar-nav {
+        flex-direction: column;
+    }
+
+    .nav-item {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
