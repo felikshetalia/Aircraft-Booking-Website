@@ -19,10 +19,9 @@ class PlanesView(generic.CreateView):
     template_name = 'planes/planeslist.html'
 
 
-
 def EngineerDashboard(request):
     if request.method == 'GET':
-        aircrafts = Aircraft.objects.all()
+        aircrafts = Aircraft.objects.order_by('timeForInspection')
         return render(request,'engineer/engineer.html', {'aircrafts': aircrafts})
 
 
