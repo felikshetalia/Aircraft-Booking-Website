@@ -18,6 +18,15 @@ class PlanesView(generic.CreateView):
     success_url = reverse_lazy('planes')
     template_name = 'planes/planeslist.html'
 
+
+
+def EngineerDashboard(request):
+    if request.method == 'GET':
+        aircrafts = Aircraft.objects.all()
+        return render(request,'engineer/engineer.html', {'aircrafts': aircrafts})
+
+
+
 def my_view(request):
     return HttpResponse("<html><body><h1>Hello, world!</h1></body></html>")
 

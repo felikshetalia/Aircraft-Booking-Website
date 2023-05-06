@@ -5,12 +5,25 @@
 {% extends 'base.html' %}
 
 {% block page_title %}
-Book Your Plane
+Welcome Engineer
 {% endblock %}
 
+
 {% block content %}
-{% load static %}
+  <h1>Aircraft List</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Flight Number</th>
+        <th>Departure Airport</th>
+        <th>Arrival Airport</th>
+        <th>Departure Time</th>
+        <th>Arrival Time</th>
+      </tr>
+    </thead>
+   
+  </table>
 
-      
+  <td>{{ aircrafts }}</td>
 
-{% endblock content %}
+  {% endblock %}
