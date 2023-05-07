@@ -13,8 +13,6 @@ from django.views import generic
 from django.conf import settings
 
 
-
-
 class PlanesView(generic.CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('planes')
