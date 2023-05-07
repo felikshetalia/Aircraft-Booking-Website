@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 class User(AbstractUser):
     id = models.AutoField(primary_key=True)
     is_user = models.BooleanField(default=False)
-    is_employee = models.BooleanField(default=False)
+    is_engineer = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
     class Meta:
