@@ -12,5 +12,6 @@ urlpatterns = [
     path('bookings/', views.book_aircraft_api, name='book_aircraft_api'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
+    path('booking_confirmation/<int:booking_id>/', views.booking_confirmation, name='booking_confirmation'),
 ]
 
