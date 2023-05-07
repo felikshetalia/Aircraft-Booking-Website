@@ -4,6 +4,7 @@ from .views import  PlanesView
 
 urlpatterns = [
     path('', views.my_view, name='my_view'),
+    path('engineer/', views.EngineerDashboard, name='engineer'),
     path('planes/',PlanesView.as_view(),name='planes'),
     path('book_aircraft/', views.book_aircraft, name='book_aircraft'),
     path('booking_list/', views.booking_list, name='booking_list'),
