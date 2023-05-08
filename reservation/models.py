@@ -14,6 +14,7 @@ class Aircraft(models.Model):
     description = models.CharField(max_length=500, blank=True)
     image = models.ImageField(upload_to='static/Aircrafts_img/', blank=True, null=True)
     availability = models.BooleanField()
+    country = models.CharField(max_length=100,default='Unknown')
 
 
     #users = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
@@ -28,3 +29,5 @@ class Booking(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+
+

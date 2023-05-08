@@ -18,15 +18,15 @@
             <input type="text" name="q" placeholder="Search aircraft" value="{{ request.GET.q }}">
             <select name="type">
                 <option value="">All Types</option>
-                <option value="Boeing">Boeing</option>
-                <option value="Airbus">Airbus</option>
-                <option value="Embraer">Embraer</option>
+                <option value="Boeing" {% if request.GET.type == "Boeing" %}selected{% endif %}>Boeing</option>
+                <option value="Airbus" {% if request.GET.type == "Airbus" %}selected{% endif %}>Airbus</option>
+                <option value="Embraer" {% if request.GET.type == "Embraer" %}selected{% endif %}>Embraer</option>
             </select>
             <select name="origin">
                 <option value="">All Origins</option>
-                <option value="United States">United States</option>
-                <option value="France">France</option>
-                <option value="Brazil">Brazil</option>
+                <option value="United States" {% if request.GET.origin == "United States" %}selected{% endif %}>United States</option>
+                <option value="France" {% if request.GET.origin == "France" %}selected{% endif %}>France</option>
+                <option value="Brazil" {% if request.GET.origin == "Brazil" %}selected{% endif %}>Brazil</option>
             </select>
             <input type="submit" value="Search">
         </form>
@@ -36,10 +36,12 @@
                 <img src="{{ aircraft.image }}" alt="{{ aircraft.xwmmodel }}">
                 <div class="card-body">
                     <h3 class="card-title">{{ aircraft.model }}</h3>
+                    <p class="card-text"><strong>Aircraft ID: </strong>{{ aircraft.id }}</p>
                     <p class="card-text"><strong>Fuel Capacity: </strong>{{ aircraft.fuelCapacity }}</p>
                     <p class="card-text"><strong>Current Speed: </strong>{{ aircraft.currentSpeed }}</p>
                     <p class="card-text"><strong>Availability: </strong>{{ aircraft.availability }}</p>
                     <p class="card-text"><strong>Description: </strong>{{ aircraft.description }}</p>
+                    <p class="card-text"><strong>Country: </strong>{{ aircraft.country }}</p>
                     <a href="#" class="btn book-btn" data-aircraft-id="{{ aircraft.id }}">Booking</a>
                     <form method="post" action="{% url 'book_aircraft' %}" class="book-form" data-aircraft-id="{{ aircraft.id }}" style="display:none;">
                         {% csrf_token %}

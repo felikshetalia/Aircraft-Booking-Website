@@ -6,12 +6,14 @@ from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.urls import reverse
+from datetime import datetime
 
 # Create your views here.
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
 from django.conf import settings
+from django.db.models import Q
 
 
 class PlanesView(generic.CreateView):
@@ -27,12 +29,26 @@ def EngineerDashboard(request):
         return render(request,'engineer/engineer.html', {'aircrafts': aircrafts , "booking_list":booking })
 
 
-
 def my_view(request):
-    aircrafts = Aircraft.objects.all()
+    query = request.GET.get('q', '')
+    aircraft_type = request.GET.get('type', '')
+    origin = request.GET.get('origin', '')
+
+    filters = Q()
+
+    if query:
+        filters &= Q(model__icontains=query)
+
+    if aircraft_type:
+        filters &= Q(model__icontains=aircraft_type)
+
+    if origin:
+        filters &= Q(country__icontains=origin)
+
+    filters &= ~Q(timeForInspection__lte=datetime.today())
+    aircrafts = Aircraft.objects.filter(filters)
     context = {'aircrafts': aircrafts}
     return render(request, 'home.html', context)
-
 
 
 @login_required
@@ -41,35 +57,37 @@ def book_aircraft(request):
         aircraft_id = request.POST.get('aircraft_id')
         start_time_str = request.POST.get('start_time')
         end_time_str = request.POST.get('end_time')
-        
+
         if not (aircraft_id and start_time_str and end_time_str):
             return render(request, 'book_aircraft.html', {'error': 'Missing required fields'})
-        
+
         try:
             start_time = parse_datetime(start_time_str)
             end_time = parse_datetime(end_time_str)
         except ValueError:
             return render(request, 'book_aircraft.html', {'error': 'Invalid datetime format'})
-        
+
         if start_time >= end_time:
             return render(request, 'book_aircraft.html', {'error': 'End time must be after start time'})
-        
+
         try:
             aircraft = Aircraft.objects.get(id=aircraft_id)
         except Aircraft.DoesNotExist:
             return render(request, 'book_aircraft.html', {'error': 'Aircraft not found'})
-        
+
+        # Check if the aircraft is available
         if not aircraft.availability:
             return render(request, 'book_aircraft.html', {'error': 'Aircraft is not available for booking'})
-        
+
         booking = Booking.objects.create(aircraft=aircraft, user=request.user, start_time=start_time, end_time=end_time, status='Pending')
         aircraft.availability = False
         aircraft.save()
         return render(request, 'booking_confirmation.html', {'booking': booking})
     else:
         aircrafts = Aircraft.objects.filter(availability=True)
-        return render(request, 'book_aircraft.html', {'aircrafts': aircrafts})
-    
+        models = Aircraft.objects.values_list('model', flat=True).distinct()
+        return render(request, 'book_aircraft.html', {'models': models})
+
 
 
 def booking_confirmation(request, booking_id):
@@ -80,11 +98,11 @@ def booking_confirmation(request, booking_id):
 
     return render(request, 'booking_confirmation.html', {'booking': booking})
 
-
 @login_required
 def booking_list(request):
     bookings = Booking.objects.filter(user=request.user).order_by('-start_time')
     return render(request, 'booking_list.html', {'bookings': bookings})
+
 
 @login_required
 def cancel_booking(request, booking_id):
@@ -101,14 +119,6 @@ def cancel_booking(request, booking_id):
     booking.save()
     
     return redirect('booking_list')
-
-@require_POST
-@login_required
-def book_aircraft_api(request):
-    aircraft_id = request.POST.get('aircraftId')
-    start_time_str = request.POST.get('bookingStartDateTime')
-
-
 
 
 def about(request):
