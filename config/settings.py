@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-udc!ma)dp)_-qu@gxnz&nf@svf2f!bocj&r8mjvlnzqcmb)5s1
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+FIXTURE_DIRS = ['Fixtures']
 
 # Application definition
 
@@ -117,8 +117,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = '/static/'
 
+STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 

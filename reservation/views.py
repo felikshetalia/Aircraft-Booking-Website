@@ -5,6 +5,7 @@ from .models import Aircraft, Booking
 from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.urls import reverse
 
 # Create your views here.
 from django.contrib.auth.forms import UserCreationForm
@@ -13,18 +14,17 @@ from django.views import generic
 from django.conf import settings
 
 
-
-
 class PlanesView(generic.CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('planes')
     template_name = 'planes/planeslist.html'
 
-
+@login_required
 def EngineerDashboard(request):
     if request.method == 'GET':
         aircrafts = Aircraft.objects.order_by('timeForInspection')
-        return render(request,'engineer/engineer.html', {'aircrafts': aircrafts})
+        booking = Booking.objects.all()
+        return render(request,'engineer/engineer.html', {'aircrafts': aircrafts , "booking_list":booking })
 
 
 
@@ -69,6 +69,17 @@ def book_aircraft(request):
     else:
         aircrafts = Aircraft.objects.filter(availability=True)
         return render(request, 'book_aircraft.html', {'aircrafts': aircrafts})
+    
+
+
+def booking_confirmation(request, booking_id):
+    try:
+        booking = Booking.objects.get(id=booking_id)
+    except Booking.DoesNotExist:
+        return render(request, 'book_aircraft.html', {'error': 'Booking not found'})
+
+    return render(request, 'booking_confirmation.html', {'booking': booking})
+
 
 @login_required
 def booking_list(request):
@@ -96,6 +107,8 @@ def cancel_booking(request, booking_id):
 def book_aircraft_api(request):
     aircraft_id = request.POST.get('aircraftId')
     start_time_str = request.POST.get('bookingStartDateTime')
+
+
 
 
 def about(request):
