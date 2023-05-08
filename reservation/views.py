@@ -60,6 +60,7 @@ def book_aircraft(request):
 
         if not (aircraft_id and start_time_str and end_time_str):
             return render(request, 'book_aircraft.html', {'error': 'Missing required fields'})
+        
 
         try:
             start_time = parse_datetime(start_time_str)
