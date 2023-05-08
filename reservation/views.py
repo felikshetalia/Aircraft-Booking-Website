@@ -6,12 +6,14 @@ from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.urls import reverse
+from datetime import datetime
 
 # Create your views here.
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
 from django.conf import settings
+from django.db.models import Q
 
 
 class PlanesView(generic.CreateView):
@@ -27,9 +29,24 @@ def EngineerDashboard(request):
         return render(request,'engineer/engineer.html', {'aircrafts': aircrafts , "booking_list":booking })
 
 
-
 def my_view(request):
-    aircrafts = Aircraft.objects.all()
+    query = request.GET.get('q', '')
+    aircraft_type = request.GET.get('type', '')
+    origin = request.GET.get('origin', '')
+
+    filters = Q()
+
+    if query:
+        filters &= Q(model__icontains=query)
+
+    if aircraft_type:
+        filters &= Q(model__icontains=aircraft_type)
+
+    if origin:
+        filters &= Q(country__icontains=origin)
+
+    filters &= ~Q(timeForInspection__lte=datetime.today())
+    aircrafts = Aircraft.objects.filter(filters)
     context = {'aircrafts': aircrafts}
     return render(request, 'home.html', context)
 
@@ -80,11 +97,11 @@ def booking_confirmation(request, booking_id):
 
     return render(request, 'booking_confirmation.html', {'booking': booking})
 
-
 @login_required
 def booking_list(request):
     bookings = Booking.objects.filter(user=request.user).order_by('-start_time')
     return render(request, 'booking_list.html', {'bookings': bookings})
+
 
 @login_required
 def cancel_booking(request, booking_id):
@@ -101,14 +118,6 @@ def cancel_booking(request, booking_id):
     booking.save()
     
     return redirect('booking_list')
-
-@require_POST
-@login_required
-def book_aircraft_api(request):
-    aircraft_id = request.POST.get('aircraftId')
-    start_time_str = request.POST.get('bookingStartDateTime')
-
-
 
 
 def about(request):
