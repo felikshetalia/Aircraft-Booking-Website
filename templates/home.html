@@ -33,6 +33,7 @@
         <div class="row">
             {% for aircraft in aircrafts %}
             <div class="card">
+                <a href="{% url 'aircraft_detail' aircraft.id %}">
                 <img src="{{ aircraft.image }}" alt="{{ aircraft.xwmmodel }}">
                 <div class="card-body">
                     <h3 class="card-title">{{ aircraft.model }}</h3>
@@ -53,6 +54,7 @@
                         <input type="submit" value="Book now" class="btn">
                     </form>
                 </div>
+                </a>
             </div>
         {% endfor %}
         </div>

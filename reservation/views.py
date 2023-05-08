@@ -89,7 +89,14 @@ def book_aircraft(request):
         models = Aircraft.objects.values_list('model', flat=True).distinct()
         return render(request, 'book_aircraft.html', {'models': models})
 
+@login_required
+def plane_details(request, aircraft_id):
+    try:
+        aircraft = Aircraft.objects.get(id=aircraft_id)
+    except Aircraft.DoesNotExist:
+        return render(request, 'home.html', {'error_message': 'Aircraft not found'})
 
+    return render(request, 'aircraft_detail.html', {'aircraft': aircraft})
 
 def booking_confirmation(request, booking_id):
     try:
