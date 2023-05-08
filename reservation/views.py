@@ -51,42 +51,43 @@ def my_view(request):
     return render(request, 'home.html', context)
 
 
-
 @login_required
 def book_aircraft(request):
     if request.method == 'POST':
         aircraft_id = request.POST.get('aircraft_id')
         start_time_str = request.POST.get('start_time')
         end_time_str = request.POST.get('end_time')
-        
+
         if not (aircraft_id and start_time_str and end_time_str):
             return render(request, 'book_aircraft.html', {'error': 'Missing required fields'})
-        
+
         try:
             start_time = parse_datetime(start_time_str)
             end_time = parse_datetime(end_time_str)
         except ValueError:
             return render(request, 'book_aircraft.html', {'error': 'Invalid datetime format'})
-        
+
         if start_time >= end_time:
             return render(request, 'book_aircraft.html', {'error': 'End time must be after start time'})
-        
+
         try:
             aircraft = Aircraft.objects.get(id=aircraft_id)
         except Aircraft.DoesNotExist:
             return render(request, 'book_aircraft.html', {'error': 'Aircraft not found'})
-        
+
+        # Check if the aircraft is available
         if not aircraft.availability:
             return render(request, 'book_aircraft.html', {'error': 'Aircraft is not available for booking'})
-        
+
         booking = Booking.objects.create(aircraft=aircraft, user=request.user, start_time=start_time, end_time=end_time, status='Pending')
         aircraft.availability = False
         aircraft.save()
         return render(request, 'booking_confirmation.html', {'booking': booking})
     else:
         aircrafts = Aircraft.objects.filter(availability=True)
-        return render(request, 'book_aircraft.html', {'aircrafts': aircrafts})
-    
+        models = Aircraft.objects.values_list('model', flat=True).distinct()
+        return render(request, 'book_aircraft.html', {'models': models})
+
 
 
 def booking_confirmation(request, booking_id):
