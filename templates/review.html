@@ -10,44 +10,46 @@
   <body>
     <div class="container">
       <div class="first">
-         <img src="{{ aircraft.image }}" alt="{{ aircraft.xwmmodel }}">
-{#        <img src="https://biznesalert.pl/wp-content/uploads/2019/07/LOT_787_1.jpg" alt="{{ aircraft.xwmmodel }}">#}
+         <img src="{{ aircraft.image }}" alt="{{ aircraft.model }}">
         <div class="details">
           <div class="card-body">
-            <h3 class="card-title">{{ aircraft.model }}</h3>
-            <p class="card-text"><strong>Aircraft ID: </strong>{{ aircraft.id }}</p>
-            <p class="card-text"><strong>Fuel Capacity: </strong>{{ aircraft.fuelCapacity }}</p>
-            <p class="card-text"><strong>Current Speed: </strong>{{ aircraft.currentSpeed }}</p>
-            <p class="card-text"><strong>Availability: </strong>{{ aircraft.availability }}</p>
-            <p class="card-text"><strong>Description: </strong>{{ aircraft.description }}</p>
-            <p class="card-text"><strong>Country: </strong>{{ aircraft.country }}</p>
+            <h3 class="card-title">{{ booking.aircraft.model }}</h3>
+            <p class="card-text"><strong>Aircraft ID: </strong>{{ booking.id }}</p>
+            <p class="card-text"><strong>Fuel Capacity: </strong>{{ booking.aircraft.fuelCapacity }}</p>
+            <p class="card-text"><strong>Current Speed: </strong>{{ booking.aircraft.currentSpeed }}</p>
+            <p class="card-text"><strong>Description: </strong>{{ booking.aircraft.description }}</p>
+            <p class="card-text"><strong>Country: </strong>{{ booking.aircraft.country }}</p>
           </div>
         </div>
       </div>
 
       <div class="review-form">
-        <h1>Review your renting experience with {{ aircraft.model }}</h1>
-        <div class="form-group">
-          <div class="rating">
-            <span class="star" data-value="1">&#9733;</span>
-            <span class="star" data-value="2">&#9733;</span>
-            <span class="star" data-value="3">&#9733;</span>
-            <span class="star" data-value="4">&#9733;</span>
-            <span class="star" data-value="5">&#9733;</span>
+        <form method="post">
+          {% csrf_token %}
+          <h1>Review your renting experience with {{ aircraft.model }}</h1>
+          <div class="form-group">
+            <div class="rating">
+              <span class="star" data-value="1">&#9733;</span>
+              <span class="star" data-value="2">&#9733;</span>
+              <span class="star" data-value="3">&#9733;</span>
+              <span class="star" data-value="4">&#9733;</span>
+              <span class="star" data-value="5">&#9733;</span>
+            </div>
+            <input type="hidden" id="rating-value" name="rating">
           </div>
-        </div>
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input type="text" id="name" placeholder="Enter your name">
-        </div>
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" placeholder="Enter your email">
-        </div>
-        <textarea id="comment-box" placeholder="Write your comments here"></textarea>
-        <button id="submit-btn">Submit</button>
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name">
+          </div>
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+          </div>
+          <textarea id="comment-box" name="comment" placeholder="Write your comments here"></textarea>
+          <button id="submit-btn" type="submit">Submit</button>
+        </form>
       </div>
-    </div>
+      
 
     <script>
       document.addEventListener("DOMContentLoaded", function() {
@@ -98,15 +100,13 @@
           const name = document.querySelector("#name").value;
           const email = document.querySelector("#email").value;
 
-          console.log("Rating:", rating);
-          console.log("Comment:", comment);
-          console.log("Name:", name);
-          console.log("Email:", email);
+          const csrfToken = getCookie('csrftoken');
 
-          fetch('/save-rating/', {
+          fetch(`{% url 'review' aircraft_id=booking.aircraft.id%}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRFToken': csrfToken,
             },
             body: JSON.stringify({
               rating: rating,
@@ -118,19 +118,40 @@
           .then(response => response.json())
           .then(data => {
             console.log(data);
-            ratingValue.value = "";
-            commentBox.value = "";
-            document.querySelector("#name").value = "";
-            document.querySelector("#email").value = "";
-            stars.forEach(function(star) {
-              star.classList.remove("selected");
-            });
-          })
+
+if (data.redirect) {
+  window.location.href = data.redirect;
+}
+
+ratingValue.value = "";
+commentBox.value = "";
+document.querySelector("#name").value = "";
+document.querySelector("#email").value = "";
+stars.forEach(function(star) {
+  star.classList.remove("selected");
+});
+})
           .catch(error => {
             console.error('Error:', error);
           });
         });
       });
+
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+      }
     </script>
   </body>
 {% endblock %}

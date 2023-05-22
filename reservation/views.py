@@ -1,12 +1,17 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Aircraft, Booking
+from accounts.models import User
+from .models import Aircraft, Booking, Review
 from django.utils.dateparse import parse_datetime
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.urls import reverse
 from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.utils import timezone
+from django.contrib import messages
 
 # Create your views here.
 from django.contrib.auth.forms import UserCreationForm
@@ -14,6 +19,10 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.conf import settings
 from django.db.models import Q
+import logging
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+logger = logging.getLogger(__name__)
 
 
 class PlanesView(generic.CreateView):
@@ -61,7 +70,6 @@ def book_aircraft(request):
         if not (aircraft_id and start_time_str and end_time_str):
             return render(request, 'book_aircraft.html', {'error': 'Missing required fields'})
         
-
         try:
             start_time = parse_datetime(start_time_str)
             end_time = parse_datetime(end_time_str)
@@ -108,8 +116,20 @@ def booking_confirmation(request, booking_id):
 
 @login_required
 def booking_list(request):
-    bookings = Booking.objects.filter(user=request.user).order_by('-start_time')
+    print("Accessing booking_list")
+    check_completed_bookings()
+
+    bookings = Booking.objects.filter(user=request.user)
     return render(request, 'booking_list.html', {'bookings': bookings})
+
+def check_completed_bookings():
+    print("Checking status")
+    current_time = timezone.now()
+    print(current_time)
+    bookings = Booking.objects.filter(status='Pending', end_time__lte=current_time)
+    for booking in bookings:
+        booking.status = 'Completed'
+        booking.save()
 
 
 @login_required
@@ -138,3 +158,35 @@ def contact(request):
 
 def review(request):
     return render(request, 'review.html', {'title': 'review'})
+
+@csrf_exempt
+@login_required
+def add_review(request, aircraft_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        comment = data.get('comment')
+        rating = data.get('rating')
+        name = data.get('name')
+        email = data.get('email')
+
+        if comment and rating and name and email:
+            aircraft = get_object_or_404(Aircraft, id=aircraft_id)
+
+            Review.objects.create(user=request.user, aircraft=aircraft, comment=comment, rating=int(rating))
+            messages.success(request, "Your review has been submitted successfully")
+
+            # Since this is an API now, we need to return JSON response
+            return render(request, 'review_confirmation.html')
+
+        else:
+            return JsonResponse({'error': 'Please fill all the fields'}, status=400)
+
+    elif request.method == 'GET':
+        booking = get_object_or_404(Booking, id=aircraft_id)
+        return render(request, 'review.html', {'booking': booking})
+
+
+
+
+
