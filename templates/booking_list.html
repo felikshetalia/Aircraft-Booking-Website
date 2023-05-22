@@ -17,27 +17,26 @@
     </thead>
     <tbody>
       {% for booking in bookings %}
-      {% if booking.status == 'Pending' %}
+      {% if booking.status == 'Pending' or booking.status == 'Completed' %}
       <tr>
         <td>{{ booking.aircraft_id}}</td>
         <td>{{ booking.start_time }}</td>
         <td>{{ booking.end_time }}</td>
         <td>{{ booking.status }}</td>
         <td>
-          <a href="{% url 'cancel_booking' booking.aircraft_id%}">Cancel</a>
-            {% endif %}
-          </td>
-          <td>
-            {% if booking.status == 'Completed' %}
-             <a href="{% url 'review' booking.aircraft_id%}">Add Review</a>
-            {% endif %}
-            {% if booking.status != 'Completed' %}
-            <a href="{% url 'review' booking.aircraft_id%}">Add Review</a>
-             <a>Review after completion</a>
+          <a href="{% url 'cancel_booking' booking.id %}">Cancel</a>
+        </td>
+        <td>
+          {% if booking.status == 'Completed' %}
+            <a href="{% url 'review' booking.aircraft_id %}">Add Review</a>
+          {% endif %}
+          {% if booking.status != 'Completed' %}
+            <a>Review after completion</a>
+          {% endif %}
         </td>
       </tr>
     {% endif %}
-      {% empty %}
+    {% empty %}
         <tr>
           <td colspan="5">No bookings found.</td>
         </tr>
