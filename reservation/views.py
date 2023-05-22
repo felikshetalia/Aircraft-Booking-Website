@@ -135,3 +135,6 @@ def about(request):
 
 def contact(request):
     return render(request, 'Contact.html', {'title': 'contact'})
+
+def review(request):
+    return render(request, 'review.html', {'title': 'review'})
