@@ -14,6 +14,7 @@ urlpatterns = [
     path('booking_list/', views.booking_list, name='booking_list'),
     path('<int:aircraft_id>', views.plane_details, name='aircraft_detail'),
     path('review/<int:aircraft_id>/', views.add_review, name='review'),
-    path('review_confirmation/', views.add_review, name='review_confirmation')
+    path('review_confirmation/', views.add_review, name='review_confirmation'),
+    path('review/<int:review_id>/edit/', views.edit_review, name='edit_review'),
 ]
 

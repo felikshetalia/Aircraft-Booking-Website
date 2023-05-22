@@ -177,16 +177,38 @@ def add_review(request, aircraft_id):
             messages.success(request, "Your review has been submitted successfully")
 
             # Since this is an API now, we need to return JSON response
-            return render(request, 'review_confirmation.html')
+            return JsonResponse({'message': 'Review submitted successfully'})
 
         else:
+            print(comment)
+            print(rating)
+            print(name)
+            print(email)
             return JsonResponse({'error': 'Please fill all the fields'}, status=400)
 
     elif request.method == 'GET':
         booking = get_object_or_404(Booking, id=aircraft_id)
         return render(request, 'review.html', {'booking': booking})
+    
 
 
 
+def edit_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    
+    if request.method == 'POST':
+        comment = request.POST.get('comment')
+        rating = request.POST.get('rating')
+
+        if comment and rating:
+            review.comment = comment
+            review.rating = rating
+            review.save()
+            messages.success(request, "Your review has been updated successfully")
+
+           #Darya says this need to be fixed
+           # return redirect('review_confirmation')
+
+    return render(request, 'edit_review.html', {'review': review})
 
 
