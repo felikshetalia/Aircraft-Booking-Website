@@ -32,6 +32,7 @@
              <a href="{% url 'review' booking.aircraft_id%}">Add Review</a>
             {% endif %}
             {% if booking.status != 'Completed' %}
+            <a href="{% url 'review' booking.aircraft_id%}">Add Review</a>
              <a>Review after completion</a>
         </td>
       </tr>
