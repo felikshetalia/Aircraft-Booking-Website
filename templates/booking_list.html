@@ -16,17 +16,17 @@
     </thead>
     <tbody>
       {% for booking in bookings %}
-        <tr>
-          <td>{{ booking.aircraft }}</td>
-          <td>{{ booking.start_time }}</td>
-          <td>{{ booking.end_time }}</td>
-          <td>{{ booking.status }}</td>
-          <td>
-            {% if booking.status == 'Pending' %}
-              <a href="{% url 'cancel_booking' booking.id %}">Cancel</a>
-            {% endif %}
-          </td>
-        </tr>
+      {% if booking.status == 'Pending' %}
+      <tr>
+        <td>{{ booking.aircraft }}</td>
+        <td>{{ booking.start_time }}</td>
+        <td>{{ booking.end_time }}</td>
+        <td>{{ booking.status }}</td>
+        <td>
+          <a href="{% url 'cancel_booking' booking.id %}">Cancel</a>
+        </td>
+      </tr>
+    {% endif %}
       {% empty %}
         <tr>
           <td colspan="5">No bookings found.</td>
