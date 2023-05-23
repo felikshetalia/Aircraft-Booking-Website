@@ -3,10 +3,12 @@ from django.db import models
 from accounts.models import User
 #from accounts.models import User
 # Create your models here.
+
+
 class Aircraft(models.Model):
     id = models.BigAutoField(primary_key=True)
     currentSpeed = models.IntegerField()
-    model = models.CharField(max_length = 50)
+    model = models.CharField(max_length=50)
     fuelCapacity = models.IntegerField()
     timeForInspection = models.DateField()
     description = models.CharField(max_length=500, blank=True)
@@ -28,6 +30,7 @@ class Booking(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+
 
 class Review(models.Model):
     RATING_CHOICES = [(i, i) for i in range(1, 6)]

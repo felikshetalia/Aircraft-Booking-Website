@@ -65,7 +65,7 @@
     "timeForInspection": "2023-06-01",
     "description": "This is an Airbus A320 aircraft",
     "image": "static/Aircrafts_img/CessnaCitationX.jpeg",
-    "availability": false,
+    "availability": true,
     "country": "Brazil"
 	}
   },
@@ -80,7 +80,7 @@
       "timeForInspection": "2023-07-08",
       "description": "This is an Biplane A320 aircraft",
       "image": "static/Aircrafts_img/Biplane.jpeg",
-      "availability": false,
+      "availability": true,
       "country": "Brazil"
     }
     }
