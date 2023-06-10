@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.test import TestCase, Client
+from django.test import TestCase, Client , RequestFactory
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 
@@ -8,6 +8,8 @@ from django.utils.dateparse import parse_datetime
 
 from .models import Aircraft, Booking
 from accounts.forms import UserSignUpForm
+from unittest.mock import patch
+from .views import connect, getToken
 
 
 
@@ -113,6 +115,42 @@ class BookAircraftViewTestCase(TestCase):
         self.assertContains(response, 'End time must be after start time')
 
 
+    
+
+
+
+
+
+####Integration 
+#  NEEDS TO BE COMMENTS since to pass we need an instance of the other team server runnning on local host
+
+
+
+# class ConnectTestCase(TestCase):
+#     def setUp(self):
+#         self.factory = RequestFactory()
+
+#     @patch('requests.post')
+#     def test_connect_returns_token(self, mock_post):
+#         mock_post.return_value.status_code = 201
+#         mock_post.return_value.json.return_value = {'access': 'test_token'}
+
+#         request = self.factory.get('/connect/')
+#         response = connect(request)
+
+#         self.assertIn('token', response.content.decode())
+
+#     @patch('requests.post')
+#     def test_connect_returns_error(self, mock_post):
+#         mock_post.return_value.status_code = 400
+#         mock_post.return_value.json.return_value = {'error': 'Invalid credentials'}
+
+#         request = self.factory.get('/connect/')
+#         response = connect(request)
+
+#         self.assertNotIn('token', response.content.decode())
+=======
+
 class BookAircraftViewTest(TestCase):
     def setUp(self):
         # Create a test user
@@ -178,3 +216,4 @@ class BookAircraftViewTest(TestCase):
 
         # Assert that the user is redirected to the booking list page
         self.assertRedirects(response, reverse('booking_list'))
+
