@@ -34,10 +34,11 @@ class Booking(models.Model):
 
 class Review(models.Model):
     RATING_CHOICES = [(i, i) for i in range(1, 6)]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     aircraft = models.ForeignKey(Aircraft, on_delete=models.CASCADE)
-    comment = models.TextField(blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.TextField(max_length=1000)
     rating = models.IntegerField(choices=RATING_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 

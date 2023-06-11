@@ -13,6 +13,7 @@
         <th>Status</th>
         <th>Action</th>
         <th>Review</th>
+        <th>View Review</th>
       </tr>
     </thead>
     <tbody>
@@ -33,6 +34,9 @@
           {% if booking.status != 'Completed' %}
             <a>Review after completion</a>
           {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'view_reviews' booking.aircraft_id %}">View Review</a>
         </td>
       </tr>
     {% endif %}

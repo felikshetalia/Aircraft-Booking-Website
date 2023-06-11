@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 import os
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.contrib import messages
 
 #INTEGRATION STUFF 
-import requests
+# import requests
 #
 
 # Create your views here.
@@ -172,29 +172,25 @@ def add_review(request, aircraft_id):
 
         comment = data.get('comment')
         rating = data.get('rating')
-        name = data.get('name')
-        email = data.get('email')
 
-        if comment and rating and name and email:
+        if comment and rating:
             aircraft = get_object_or_404(Aircraft, id=aircraft_id)
 
             Review.objects.create(user=request.user, aircraft=aircraft, comment=comment, rating=int(rating))
             messages.success(request, "Your review has been submitted successfully")
 
-            # Since this is an API now, we need to return JSON response
             return JsonResponse({'message': 'Review submitted successfully'})
 
         else:
             print(comment)
             print(rating)
-            print(name)
-            print(email)
             return JsonResponse({'error': 'Please fill all the fields'}, status=400)
 
     elif request.method == 'GET':
-        booking = get_object_or_404(Booking, id=aircraft_id)
-        return render(request, 'review.html', {'booking': booking})
-    
+        aircraft = get_object_or_404(Aircraft, id=aircraft_id)
+        return render(request, 'review.html', {'aircraft': aircraft})
+
+
 
 
 
@@ -211,15 +207,32 @@ def edit_review(request, review_id):
             review.save()
             messages.success(request, "Your review has been updated successfully")
 
-           #Darya says this need to be fixed
-           # return redirect('review_confirmation')
-
     return render(request, 'edit_review.html', {'review': review})
 
 
+@login_required
+def view_reviews(request, aircraft_id):
+    aircraft = get_object_or_404(Aircraft, id=aircraft_id)
+    reviews = Review.objects.filter(aircraft=aircraft)
+    return render(request, 'view_reviews.html', {'reviews': reviews, 'aircraft': aircraft})
 
 
-#Integration stufff 
+@login_required
+def delete_review(request, review_id):
+    try:
+        review = Review.objects.get(id=review_id)
+    except Review.DoesNotExist:
+        print(f"Review with id {review_id} does not exist.")
+        return HttpResponse("Review does not exist.", status=404)
+
+    if review.user != request.user:
+        return HttpResponseForbidden()
+    aircraft_id = review.aircraft.id
+    review.delete()
+    return redirect('view_reviews', aircraft_id=aircraft_id)
+
+
+#Integration stufff
 
 
 def get_data_from_api(request):
