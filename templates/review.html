@@ -17,11 +17,11 @@ Aircraft Reservation Review
       <img src="{{ aircraft.image.url }}" alt="{{ aircraft.model }}">
       <div class="details">
         <div class="card-body">
-          <h3 class="card-title">{{ booking.aircraft.model }}</h3>
-          <p class="card-text"><strong>Aircraft ID:</strong> {{ booking.id }}</p>
-          <p class="card-text"><strong>Fuel Capacity:</strong> {{ booking.aircraft.fuelCapacity }}</p>
-          <p class="card-text"><strong>Current Speed:</strong> {{ booking.aircraft.currentSpeed }}</p>
-          <p class="card-text"><strong>Description:</strong> {{ booking.aircraft.description }}</p>
+          <h3 class="card-title">{{ aircraft.model }}</h3>
+          <p class="card-text"><strong>Aircraft ID:</strong> {{ aircraft.id }}</p>
+          <p class="card-text"><strong>Fuel Capacity:</strong> {{ aircraft.fuelCapacity }}</p>
+          <p class="card-text"><strong>Current Speed:</strong> {{ aircraft.currentSpeed }}</p>
+          <p class="card-text"><strong>Description:</strong> {{ aircraft.description }}</p>
         
         </div>
       </div>
@@ -30,7 +30,7 @@ Aircraft Reservation Review
     <div class="review-form">
       <form method="post">
         {% csrf_token %}
-        <h1>Review your renting experience with {{ booking.aircraft.model }} .</h1>
+        <h1>Review your renting experience with {{  aircraft.model }}</h1>
         <div class="form-group">
           <div class="rating">
             <span class="star" data-value="1">&#9733;</span>
@@ -40,14 +40,6 @@ Aircraft Reservation Review
             <span class="star" data-value="5">&#9733;</span>
           </div>
           <input type="hidden" id="rating-value" name="rating">
-        </div>
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input type="text" id="name" name="name" placeholder="Enter your name">
-        </div>
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" placeholder="Enter your email">
         </div>
         <textarea id="comment-box" name="comment" placeholder="Write your comments here"></textarea>
         <button id="submit-btn" type="submit">Submit</button>
@@ -97,49 +89,44 @@ Aircraft Reservation Review
         });
       });
 
-      submitBtn.addEventListener("click", function (event) {
-        event.preventDefault();
+   submitBtn.addEventListener("click", function (event) {
+  event.preventDefault();
 
-        const rating = ratingValue.value;
-        const comment = commentBox.value;
-        const name = document.querySelector("#name").value;
-        const email = document.querySelector("#email").value;
+  const rating = ratingValue.value;
+  const comment = commentBox.value;
 
-        const csrfToken = getCookie('csrftoken');
+  const csrfToken = getCookie('csrftoken');
 
-        fetch("{% url 'review' aircraft_id=booking.aircraft.id %}", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-          },
-          body: JSON.stringify({
-            rating: rating,
-            comment: comment,
-            name: name,
-            email: email,
-          }),
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.log(data);
+  fetch("{% url 'review' aircraft_id=aircraft.id %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({
+        rating: rating,
+        comment: comment,
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
 
-            if (data.redirect) {
-              window.location.href = data.redirect;
-            }
+        if (data.redirect) {
+          window.location.href = data.redirect;
+        }
 
-            ratingValue.value = "";
-            commentBox.value = "";
-            document.querySelector("#name").value = "";
-            document.querySelector("#email").value = "";
-            stars.forEach(function (star) {
-              star.classList.remove("selected");
-            });
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
+        ratingValue.value = "";
+        commentBox.value = "";
+        stars.forEach(function (star) {
+          star.classList.remove("selected");
+        });
+      })
+      .catch(error => {
+        console.error('Error:', error);
       });
+});
+
     });
 
     function getCookie(name) {
@@ -148,7 +135,6 @@ Aircraft Reservation Review
         const cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
           const cookie = cookies[i].trim();
-          // Does this cookie string begin with the name we want?
           if (cookie.substring(0, name.length + 1) === (name + '=')) {
             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
             break;

@@ -1,0 +1,51 @@
+body {
+   background: linear-gradient(to right, #a1c3d1, #e3a5b6);
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.delete-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+
+.container {
+  width: 80%;
+  margin: auto;
+}
+
+.review-card {
+  border: 1px solid #ccc;
+  margin: 10px 0;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.review-card h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.rating .star {
+  color: #ddd;
+  font-size: 20px;
+  margin-right: 5px;
+}
+
+.rating .star.selected {
+  color: #f5c518;
+}
+
+.comment {
+  color: #555;
+  line-height: 1.6;
+  margin-top: 10px;
+}

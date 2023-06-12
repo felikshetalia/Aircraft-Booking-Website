@@ -1,10 +1,15 @@
-
+from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.test import TestCase, Client
+from django.test import TestCase, Client , RequestFactory
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+
+from django.utils.dateparse import parse_datetime
+
 from .models import Aircraft, Booking
 from accounts.forms import UserSignUpForm
+from unittest.mock import patch
+from .views import connect, getToken
 
 
 
@@ -109,4 +114,104 @@ class BookAircraftViewTestCase(TestCase):
         })
         self.assertContains(response, 'End time must be after start time')
 
+
     
+
+
+
+
+
+####Integration 
+#  NEEDS TO BE COMMENTS since to pass we need an instance of the other team server runnning on local host
+
+
+
+# class ConnectTestCase(TestCase):
+#     def setUp(self):
+#         self.factory = RequestFactory()
+
+#     @patch('requests.post')
+#     def test_connect_returns_token(self, mock_post):
+#         mock_post.return_value.status_code = 201
+#         mock_post.return_value.json.return_value = {'access': 'test_token'}
+
+#         request = self.factory.get('/connect/')
+#         response = connect(request)
+
+#         self.assertIn('token', response.content.decode())
+
+#     @patch('requests.post')
+#     def test_connect_returns_error(self, mock_post):
+#         mock_post.return_value.status_code = 400
+#         mock_post.return_value.json.return_value = {'error': 'Invalid credentials'}
+
+#         request = self.factory.get('/connect/')
+#         response = connect(request)
+
+#         self.assertNotIn('token', response.content.decode())
+class BookAircraftViewTest(TestCase):
+    def setUp(self):
+        # Create a test user
+        self.client = Client()
+        form_data = {
+            'username': 'testuser3',
+            'password1': 'NotEasyPassword124^',
+            'password2': 'NotEasyPassword124^',
+            'email': 'testuser3@example.com',
+        }
+        form = UserSignUpForm(data=form_data)
+        if not form.is_valid():
+            print(form.errors)
+
+        self.user = form.save()
+
+        # Create some test aircrafts
+        self.aircraft1 = Aircraft.objects.create(id="3", currentSpeed="10", model="Cesna1", fuelCapacity=100, timeForInspection="2023-04-26", description="Nice test", image="static/Aircrafts_img/AirbusA380.jpeg", availability=True)
+        self.aircraft2 = Aircraft.objects.create(id="4", currentSpeed="10", model="Cesna2", fuelCapacity=200, timeForInspection="2023-05-26", description="Nice test", image="static/Aircrafts_img/Biplane.jpeg", availability=True)
+
+    def test_book_aircraft_with_valid_data(self):
+        # Log in the test user
+        self.client.login(username='testuser3', password='NotEasyPassword124^')
+
+        # Prepare the data for booking
+        aircraft_id = self.aircraft1.id
+        start_time_str = '2023-04-23 09:00:00'
+        end_time_str = '2023-05-23 12:00:00'
+
+        # Send a POST request to book the aircraft
+        response = self.client.post(reverse('book_aircraft'), {
+            'aircraft_id': aircraft_id,
+            'start_time': start_time_str,
+            'end_time': end_time_str,
+        })
+
+        # Assert that the booking is created in the database
+        booking = Booking.objects.get(id=1)
+        self.assertEqual(booking.aircraft, self.aircraft1)
+        self.assertEqual(booking.user, self.user)
+        self.assertEqual(booking.status, 'Pending')
+
+        # Assert that the aircraft availability is updated
+        self.aircraft1.refresh_from_db()
+        self.assertFalse(self.aircraft1.availability)
+
+    def test_cancel_booking(self):
+        # Create a booking for the user
+        booking = Booking.objects.create(aircraft=self.aircraft1, user=self.user, start_time='2023-05-22T10:00:00Z',
+                                         end_time='2023-05-22T12:00:00Z', status='Pending')
+
+        # Login the user
+        self.client = Client()
+        self.client.login(username='testuser3', password='NotEasyPassword124^')
+
+        # Send a POST request to cancel the booking
+        response = self.client.post(reverse('cancel_booking', args=[booking.id]))
+
+        # Assert that the booking is cancelled and the aircraft availability is set to True
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, 'Cancelled')
+        self.assertTrue(self.aircraft1.availability)
+
+        # Assert that the user is redirected to the booking list page
+        self.assertRedirects(response, reverse('booking_list'))
+
