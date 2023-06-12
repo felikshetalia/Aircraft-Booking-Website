@@ -179,8 +179,10 @@ def add_review(request, aircraft_id):
 
             Review.objects.create(user=request.user, aircraft=aircraft, comment=comment, rating=int(rating))
             messages.success(request, "Your review has been submitted successfully")
+            redirect_url = reverse('view_reviews', kwargs={'aircraft_id': aircraft_id})
+            return JsonResponse({'message': 'Review submitted successfully', 'redirect': redirect_url})
 
-            return JsonResponse({'message': 'Review submitted successfully'})
+            
 
         else:
             print(comment)
