@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+import os
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from accounts.models import User
@@ -12,6 +13,10 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils import timezone
 from django.contrib import messages
+
+#INTEGRATION STUFF 
+import requests
+#
 
 # Create your views here.
 from django.contrib.auth.forms import UserCreationForm
@@ -210,5 +215,102 @@ def edit_review(request, review_id):
            # return redirect('review_confirmation')
 
     return render(request, 'edit_review.html', {'review': review})
+
+
+
+
+#Integration stufff 
+
+
+def get_data_from_api(request):
+
+    auth_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg1ODk5ODczLCJpYXQiOjE2ODU4OTYyNzMsImp0aSI6IjJjOGYxYzNmYzA0MzQ0NTliNjgwOTdlMjc5MzRjYTg5IiwidXNlcl9pZCI6M30.g99bu8E6ZHTb-gLwEs4KfjYrD1qnGK8WNlheKe2GfiY'
+    headers = {'Authorization': 'Bearer ' + auth_token}
+
+    url = 'http://127.0.0.1:8000/aircraft/'  # Replace with your API endpoint URL
+    auth = ('sebastian', '1234')
+    data = {'aircraft_id': 'SP-KOG',
+        'aircraft_name': 'name', 'aircraft_type': "C182", 'aircraft_capacity': 4, 'aircraft_range': 1000, 'aircraft_speed': 100, 'aircraft_fuel': 100, 'aircraft_status': 'available', 'aircraft_cost_per_hour': 1000, 'aircraft_fuel_cost': 10}
+   
+    #response = requests.get(url,headers=headers)
+    #test07  NotSoEasy12! seba@gmail.com
+    response = requests.post(url, json=data, headers=headers)
+    data = response.json()
+    if response.status_code == 200:
+        return JsonResponse(data, safe=False)
+    else:
+        print("ERROR")
+        print(response.json())
+        return JsonResponse({'error': 'Failed to fetch data'})
+    
+
+def connect(request):
+    token_file = 'token.txt'
+    username=  "connectionOutside9"
+    email ="test9@test.eu"
+    password="NotSoEasy122!"
+
+    if os.path.isfile(token_file) and os.path.getsize(token_file) > 0:
+        # Token file exists and is not empty
+        with open(token_file, 'r') as file:
+            token_data = json.load(file)
+        
+        # Print the username and password
+        username = token_data['username']
+        password = token_data['password']
+        print(f"Username: {username}")
+        print(f"Password: {password}")
+        return getToken(username,password)
+        
+
+    
+
+    url = 'http://127.0.0.1:8000/api/register/'
+
+    
+
+    registerdata = {
+        "username": username,
+        "email": email,
+        "password": password,
+        "first_name": "Juan Jaun",
+        "last_name": "Malandro"
+    }
+    response = requests.post(url, json=registerdata)
+    print(response)
+   
+
+    # if response.status_code == 201:
+    #     print("Registered")
+    #     with open(token_file, 'w') as file:
+    #         json.dump(registerdata, file)
+    #     return JsonResponse({'Registered': "Registered"})
+    # else:
+    #     print('Error:', response.json())
+    #     return JsonResponse({'error': response.json()})
+    
+
+def getToken(user,password):
+    token_file = 'real_token.txt'
+    url = 'http://127.0.0.1:8000/api/login/'
+
+
+    registerdata = {
+        "username": user,
+        "password": password,
+        "token": ""
+    }
+    response = requests.post(url, json=registerdata)
+    print(response)
+    if response.status_code == 201 or response.status_code == 200:
+        print("logged")
+        registerdata["token"]=response.json()["access"]
+        with open(token_file, 'w') as file:
+            json.dump(registerdata, file)
+        print( response.json()["access"])
+        return JsonResponse({'token': response.json()["access"]} )
+    else:
+        print('Error:', response.json())
+        return JsonResponse({'error': response.json()})
 
 
