@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import  PlanesView  , get_data_from_api , connect
+from .views import  PlanesView
 
 urlpatterns = [
     path('', views.my_view, name='my_view'),
@@ -16,9 +16,5 @@ urlpatterns = [
     path('review/<int:aircraft_id>/', views.add_review, name='review'),
     path('review_confirmation/', views.add_review, name='review_confirmation'),
     path('review/<int:review_id>/edit/', views.edit_review, name='edit_review'),
-    ## Integration 
-
-    path('get-data/', get_data_from_api, name='get_data_from_api'),
-    path('get-planes/', connect, name='get_data_from_api'),
 ]
 
