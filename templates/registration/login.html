@@ -9,6 +9,11 @@
     <style>
     </style>
 </head>
+<script>
+{% if user.is_authenticated %}
+    window.location.href = "{% url 'my_view' %}";
+{% endif %}
+</script>
     <div class="container">
         <div class="row">
             <div class="col-md-12">
