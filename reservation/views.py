@@ -15,8 +15,7 @@ from django.utils import timezone
 from django.contrib import messages
 
 #INTEGRATION STUFF 
-# import requests
-#
+import requests
 
 # Create your views here.
 from django.contrib.auth.forms import UserCreationForm
@@ -59,7 +58,6 @@ def my_view(request):
     if origin:
         filters &= Q(country__icontains=origin)
 
-    filters &= ~Q(timeForInspection__lte=datetime.today())
     aircrafts = Aircraft.objects.filter(filters)
     context = {'aircrafts': aircrafts}
     return render(request, 'home.html', context)
@@ -134,7 +132,10 @@ def check_completed_bookings():
     bookings = Booking.objects.filter(status='Pending', end_time__lte=current_time)
     for booking in bookings:
         booking.status = 'Completed'
+        aircraft = booking.aircraft
+        aircraft.availability = True
         booking.save()
+        aircraft.save()
 
 
 @login_required
@@ -189,9 +190,6 @@ def add_review(request, aircraft_id):
     elif request.method == 'GET':
         aircraft = get_object_or_404(Aircraft, id=aircraft_id)
         return render(request, 'review.html', {'aircraft': aircraft})
-
-
-
 
 
 def edit_review(request, review_id):
