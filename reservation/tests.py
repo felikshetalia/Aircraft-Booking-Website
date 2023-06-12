@@ -149,8 +149,6 @@ class BookAircraftViewTestCase(TestCase):
 #         response = connect(request)
 
 #         self.assertNotIn('token', response.content.decode())
-=======
-
 class BookAircraftViewTest(TestCase):
     def setUp(self):
         # Create a test user
