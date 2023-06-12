@@ -9,9 +9,6 @@
     <style>
     </style>
 </head>
-    {% if user.is_authenticated %}
-
-    {% endif %}
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -37,7 +34,7 @@
                     <small><a href={% url 'signup' %} class="register-link">Don't have an account? Register here</a></small>
                     </div>
                     <div>
-                        <small><a href="#" class="AdaminLogin-link">Adamin login here</a></small>
+                        <small><a href="/admin/" class="AdaminLogin-link">Admin login here</a></small>
                     </div>
                     <div>
                         <small><a href="#" class="AdaminLogin-link">Employee login here</a></small>
