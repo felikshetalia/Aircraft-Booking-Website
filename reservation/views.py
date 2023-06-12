@@ -132,7 +132,10 @@ def check_completed_bookings():
     bookings = Booking.objects.filter(status='Pending', end_time__lte=current_time)
     for booking in bookings:
         booking.status = 'Completed'
+        aircraft = booking.aircraft
+        aircraft.availability = True
         booking.save()
+        aircraft.save()
 
 
 @login_required
