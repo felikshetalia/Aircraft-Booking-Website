@@ -213,7 +213,7 @@ def edit_review(request, review_id):
 @login_required
 def view_reviews(request, aircraft_id):
     aircraft = get_object_or_404(Aircraft, id=aircraft_id)
-    reviews = Review.objects.filter(aircraft=aircraft)
+    reviews = Review.objects.filter(aircraft=aircraft).order_by('-created_at')
     return render(request, 'view_reviews.html', {'reviews': reviews, 'aircraft': aircraft})
 
 
